@@ -32,6 +32,8 @@ jobs:
           wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.100/linux64/chromedriver-linux64.zip
           unzip chromedriver-linux64.zip
           ls -l chromedriver-linux64/  # Optional: List contents to verify extraction
+          mv chromedriver-linux64/chromedriver ./chromedriver
+          chmod +x ./chromedriver  # Ensure it's executable
           # mv chromedriver-linux64/chromedriver /desired/path/chromedriver
           # sudo mv chromedriver /usr/local/bin/  # Move to a location in PATH
           # sudo chmod +x /usr/local/bin/chromedriver  # Make it executable
