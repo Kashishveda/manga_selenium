@@ -129,10 +129,11 @@ class MangaTracker:
 
 # Example usage:
 manga_list = [
-    "Tonari no Jii-san",
     "Necromancer's Evolutionary Traits",
     "Snake Ancestor",
     "The Devil Butler"
+    "The Tutorial Is Too Hard"
+    "I'm Being Raised By Villains"
     # Add more manga names here
 ]
 
