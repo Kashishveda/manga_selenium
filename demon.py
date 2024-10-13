@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,15 +15,21 @@ class MangaTracker:
         self.driver_path = "C:/Users/ekved/Downloads/chromedriver-win64/chromedriver.exe"
         options = webdriver.ChromeOptions()
         
-        # Uncomment the next line if using a local browser
-        # options.binary_location = self.brave_path
-        
-        # this if using github
+        # Use Brave binary path only when running locally
+        if os.getenv("GITHUB_ACTIONS") is None:  # This checks if you're running locally
+            options.binary_location = self.brave_path  # Local binary path for Brave
+            
+        # Headless options for GitHub Actions or local headless run
         options.add_argument('--headless')  # Run in headless mode
         options.add_argument('--no-sandbox')  # Bypass OS security model
         options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
 
-        self.driver = webdriver.Chrome(service=Service(self.driver_path), options=options)
+        # Driver setup: Local vs GitHub Actions
+        if os.getenv("GITHUB_ACTIONS"):  # Use the GitHub path for chromedriver
+            self.driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=options)
+        else:  # Local system chromedriver path
+            self.driver = webdriver.Chrome(service=Service(self.driver_path), options=options)
+            
         self.chapter_data_file = "chapter_data.pkl"
         self.chapter_data = self.load_chapter_data()
         self.debug = debug  # Store debug state
