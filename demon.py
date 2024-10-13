@@ -26,7 +26,7 @@ class MangaTracker:
 
         # Driver setup: Local vs GitHub Actions
         if os.getenv("GITHUB_ACTIONS"):  # Use the GitHub path for chromedriver
-            self.driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=options)
+            self.driver = webdriver.Chrome(service=Service("./chromedriver"), options=options)
         else:  # Local system chromedriver path
             self.driver = webdriver.Chrome(service=Service(self.driver_path), options=options)
             
