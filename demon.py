@@ -15,12 +15,12 @@ class MangaTracker:
         options = webdriver.ChromeOptions()
         
         # Uncomment the next line if using a local browser
-        options.binary_location = self.brave_path
+        # options.binary_location = self.brave_path
         
         # this if using github
-        # options.add_argument('--headless')  # Run in headless mode
-        # options.add_argument('--no-sandbox')  # Bypass OS security model
-        # options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
+        options.add_argument('--headless')  # Run in headless mode
+        options.add_argument('--no-sandbox')  # Bypass OS security model
+        options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
 
         self.driver = webdriver.Chrome(service=Service(self.driver_path), options=options)
         self.chapter_data_file = "chapter_data.pkl"
@@ -28,10 +28,6 @@ class MangaTracker:
         self.debug = debug  # Store debug state
         
         # Telegram bot configuration
-        # uncomment if using local browser
-        self.telegram_token = "710671633:AAFlEecPu60ZSauYAw-7J_9q28nRVxP0F1BY"  # Replace with your bot token
-        self.chat_id = "7829963464"  # Replace with your chat ID
-        
         # Using environment variables for sensitive information
         # uncomment if using GitHub
         # self.telegram_token = os.getenv("TELEGRAM_TOKEN")  # This fetches the secret value
@@ -134,7 +130,7 @@ manga_list = [
 ]
 
 # Set debug=True for local testing
-manga_tracker = MangaTracker(debug=True)  # Set to False when running in GitHub Actions
+manga_tracker = MangaTracker(debug=False)  # Set to False when running in GitHub Actions
 manga_tracker.run(manga_list)
 
 #17, 20,21,22 changes with change in brower and github action
