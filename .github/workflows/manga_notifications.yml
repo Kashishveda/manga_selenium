@@ -18,16 +18,26 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install Specific Version of Brave
+      - name: Install Brave Browser
         run: |
-          # Replace with the specific version you want to install
-          BRAVE_VERSION="1.70.126"
+          # Define the specific Brave version you want to install
+          BRAVE_VERSION=1.70.126
+          
+          # Ensure curl is installed
+          sudo apt install -y curl
+          
+          # Add Brave's GPG key
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          
+          # Add Brave's repository
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          
+          # Update package lists
           sudo apt update
-          sudo apt install -y apt-transport-https
-          sudo curl -fsSL https://brave-browser-archive.s3.brave.com/brave-core.asc | sudo gpg --dearmor -o /usr/share/keyrings/brave-browser.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser.gpg] https://brave-browser-archive.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser.list
-          sudo apt update
+          
+          # Install the specific version of Brave browser
           sudo apt install -y brave-browser=${BRAVE_VERSION}-1
+
 
       - name: Install ChromeDriver
         run: |
