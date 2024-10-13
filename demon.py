@@ -132,6 +132,7 @@ class MangaTracker:
 
 # Example usage:
 manga_list = [
+    "Moon Slayer",
     "Necromancer's Evolutionary Traits",
     "Snake Ancestor",
     "The Devil Butler",
