@@ -18,28 +18,28 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install Brave
+      - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y apt-transport-https
-          sudo curl -fsSL https://brave-browser-archive.s3.brave.com/brave-core.asc | sudo gpg --dearmor -o /usr/share/keyrings/brave-browser.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser.gpg] https://brave-browser-archive.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser.list
-          sudo apt update
-          sudo apt install -y brave-browser
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Install ChromeDriver
+      - name: Install Brave Browser
         run: |
-          BRAVE_VERSION=$(brave-browser --version | grep -oP '\d+\.\d+\.\d+')
-          LATEST_DRIVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$BRAVE_VERSION")
+          sudo apt update
+          sudo apt install apt-transport-https curl
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update
+          sudo apt install brave-browser
+
+      - name: Install ChromeDriver (for Brave)
+        run: |
+          LATEST_DRIVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
           curl -O "https://chromedriver.storage.googleapis.com/$LATEST_DRIVER/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           chmod +x chromedriver
           sudo mv chromedriver /usr/local/bin/
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
 
       - name: Run script
         run: |
