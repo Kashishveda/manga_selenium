@@ -37,8 +37,11 @@ class MangaTracker:
         # Telegram bot configuration
         # Using environment variables for sensitive information
         # uncomment if using GitHub
-        self.telegram_token = os.getenv("TELEGRAM_TOKEN")  # This fetches the secret value
-        self.chat_id = os.getenv("CHAT_ID")                # This fetches the chat ID
+        # uncomment if using local browser
+        self.telegram_token = "710671633:AAFlEecPu60ZSauYAw-7J_9q28nRVxP0F1BY"  # Replace with your bot token
+        self.chat_id = "7829963464"  # Replace with your chat ID
+        # self.telegram_token = os.getenv("TELEGRAM_TOKEN")  # This fetches the secret value
+        # self.chat_id = os.getenv("CHAT_ID")                # This fetches the chat ID
 
     def load_chapter_data(self):
         if os.path.exists(self.chapter_data_file):
