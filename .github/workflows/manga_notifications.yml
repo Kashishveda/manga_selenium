@@ -17,16 +17,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-
-      - name: Install curl and add Brave Repository
-        run: |
-          sudo apt update
-          sudo apt install -y curl
-          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-          sudo apt update  # Update the package list again after adding the repo
-          apt-cache madison brave-browser  # Check for available versions
-
+          
       - name: Install curl and add Brave Repository
         run: |
           sudo apt update
@@ -35,3 +26,12 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
           sudo apt update  # Update the package list again after adding the repo
           sudo apt install -y brave-browser=1.70.126  # Install the specific version of Brave
+
+      - name: Install ChromeDriver
+        run: |
+          wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.100/linux64/chromedriver-linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/  # Move to a location in PATH
+          sudo chmod +x /usr/local/bin/chromedriver  # Make it executable
+          echo "Installed ChromeDriver version:"
+          chromedriver --version  # Verify installation
