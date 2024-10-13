@@ -80,7 +80,7 @@ class MangaTracker:
             
             # Search for manga name in the page
             try:
-                manga_element = WebDriverWait(self.driver, 10).until(
+                manga_element = WebDriverWait(self.driver, 30).until(
                     EC.presence_of_element_located((By.XPATH, f"//a[@title=\"{manga_name}\"]"))
                 )
             except Exception as e:
