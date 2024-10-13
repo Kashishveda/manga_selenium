@@ -107,24 +107,24 @@ class MangaTracker:
             self.log(f"New manga '{manga_name}' added. Initializing chapter to 0.")
             self.chapter_data[manga_name] = "0"  # Initialize to 0 for new manga
 
-        stored_chapter_number = self.chapter_data[manga_name]
-
+        # Convert both stored and latest chapter numbers to integers for comparison
+        stored_chapter_number = int(self.chapter_data[manga_name])
+        latest_chapter_number = int(latest_chapter_number)
+    
         if latest_chapter_number > stored_chapter_number:
-            
             message = f"New chapter detected for {manga_name}! Previous: {stored_chapter_number}, Now: {latest_chapter_number}"
             self.log(message)
-            # Send a notification here (e.g., via Telegram)
             self.send_telegram_message(message)  # Send notification to Telegram
+    
+            # Update the chapter number with the latest one after comparison
+            self.chapter_data[manga_name] = latest_chapter_number
+            self.save_chapter_data()  # Save the updated data immediately after the update
         else:
             self.log(f"No new chapter for {manga_name}. Latest stored chapter is still {stored_chapter_number}.")
-
-        # Update the chapter number with the latest one after comparison
-        self.chapter_data[manga_name] = latest_chapter_number
 
     def run(self, manga_list):
         for manga_name in manga_list:
             self.get_latest_chapter(manga_name)
-        self.save_chapter_data()
         self.driver.quit()
 
 # Example usage:
