@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Check Available Brave Versions
+        run: |
+          sudo apt update
+          apt-cache madison brave-browser
+
       - name: Install Brave Browser
         run: |
           # Define the specific Brave version you want to install
