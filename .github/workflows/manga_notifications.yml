@@ -34,4 +34,4 @@ jobs:
 
       - name: Run script
         run: |
-          python manga_tracker.py  # Ensure this matches your script name
+          python demon.py  # Ensure this matches your script name
