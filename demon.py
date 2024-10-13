@@ -5,17 +5,37 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pickle
 import os
+import requests
 
 class MangaTracker:
-    def __init__(self):
+    def __init__(self, debug=False):
         self.webpage_url = "https://manganato.com/"  # Replace with actual homepage URL
         self.brave_path = "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
         self.driver_path = "C:/Users/ekved/Downloads/chromedriver-win64/chromedriver.exe"
         options = webdriver.ChromeOptions()
+        
+        # Uncomment the next line if using a local browser
         options.binary_location = self.brave_path
+        
+        # this if using github
+        # options.add_argument('--headless')  # Run in headless mode
+        # options.add_argument('--no-sandbox')  # Bypass OS security model
+        # options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
+
         self.driver = webdriver.Chrome(service=Service(self.driver_path), options=options)
         self.chapter_data_file = "chapter_data.pkl"
         self.chapter_data = self.load_chapter_data()
+        self.debug = debug  # Store debug state
+        
+        # Telegram bot configuration
+        # uncomment if using local browser
+        self.telegram_token = "710671633:AAFlEecPu60ZSauYAw-7J_9q28nRVxP0F1BY"  # Replace with your bot token
+        self.chat_id = "7829963464"  # Replace with your chat ID
+        
+        # Using environment variables for sensitive information
+        # uncomment if using GitHub
+        # self.telegram_token = os.getenv("TELEGRAM_TOKEN")  # This fetches the secret value
+        # self.chat_id = os.getenv("CHAT_ID")                # This fetches the chat ID
 
     def load_chapter_data(self):
         if os.path.exists(self.chapter_data_file):
@@ -28,11 +48,24 @@ class MangaTracker:
         with open(self.chapter_data_file, "wb") as file:
             pickle.dump(self.chapter_data, file)
             
+    def log(self, message):  # Custom logging method
+        if self.debug:
+            print(message)
+            
+    def send_telegram_message(self, message):
+        """Send a message to the Telegram bot."""
+        url = f"https://api.telegram.org/bot{self.telegram_token}/sendMessage"
+        payload = {
+            "chat_id": self.chat_id,
+            "text": message
+        }
+        requests.post(url, json=payload) # Optional: To check the response
+            
     def get_latest_chapter(self, manga_name):
         self.driver.get(self.webpage_url)
         
         # Debug: Check if page loads correctly
-        print("Page Loaded. URL:", self.webpage_url)
+        self.log("Page Loaded. URL: " + self.webpage_url)
         
         try:
             # Wait for page to fully load
@@ -40,39 +73,47 @@ class MangaTracker:
                 lambda driver: driver.execute_script("return document.readyState") == "complete"
             )
             
-            print(f"Searching for manga: {manga_name}")
+            self.log(f"Searching for manga: {manga_name}")
             
             # Search for manga name in the page
-            manga_element = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.XPATH, f"//a[@title=\"{manga_name}\"]"))
-            )
-            print(f"Manga found: {manga_name}")
+            try:
+                manga_element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, f"//a[@title=\"{manga_name}\"]"))
+                )
+            except Exception as e:
+                self.log(f"Manga '{manga_name}' not found.")
+                return  # Skip to the next manga
+            
+            self.log(f"Manga found: {manga_name}")
             
             # Get the latest chapter info
             latest_chapter_element = manga_element.find_element(By.XPATH, ".//following::p[@class='a-h item-chapter'][1]/a")
             latest_chapter_text = latest_chapter_element.get_attribute('title')
-            print(f"Latest Chapter for {manga_name}: {latest_chapter_text}")
+            self.log(f"Latest Chapter for {manga_name}: {latest_chapter_text}")
             
             # Extract chapter number (assuming format like "Chapter 6: ...")
             latest_chapter_number = latest_chapter_text.split("Chapter ")[1].split(":")[0].strip()
             self.compare_chapter(manga_name, latest_chapter_number)
             
         except Exception as e:
-            print(f"Error occurred for {manga_name}: {e}")
-            #print(f"Current page source: {self.driver.page_source}")
+            # Skip to the next manga if not found
+            self.log(f"Skipping '{manga_name}': {e}")
 
     def compare_chapter(self, manga_name, latest_chapter_number):
         if manga_name not in self.chapter_data:
-            print(f"New manga '{manga_name}' added. Initializing chapter to 0.")
+            self.log(f"New manga '{manga_name}' added. Initializing chapter to 0.")
             self.chapter_data[manga_name] = "0"  # Initialize to 0 for new manga
 
         stored_chapter_number = self.chapter_data[manga_name]
 
         if latest_chapter_number > stored_chapter_number:
-            print(f"New chapter detected for {manga_name}! Previous: {stored_chapter_number}, Now: {latest_chapter_number}")
+            
+            message = f"New chapter detected for {manga_name}! Previous: {stored_chapter_number}, Now: {latest_chapter_number}"
+            self.log(message)
             # Send a notification here (e.g., via Telegram)
+            self.send_telegram_message(message)  # Send notification to Telegram
         else:
-            print(f"No new chapter for {manga_name}. Latest stored chapter is still {stored_chapter_number}.")
+            self.log(f"No new chapter for {manga_name}. Latest stored chapter is still {stored_chapter_number}.")
 
         # Update the chapter number with the latest one after comparison
         self.chapter_data[manga_name] = latest_chapter_number
@@ -87,8 +128,13 @@ class MangaTracker:
 manga_list = [
     "Tonari no Jii-san",
     "Necromancer's Evolutionary Traits",
+    "Snake Ancestor",
+    "The Devil Butler"
     # Add more manga names here
 ]
 
-manga_tracker = MangaTracker()
+# Set debug=True for local testing
+manga_tracker = MangaTracker(debug=True)  # Set to False when running in GitHub Actions
 manga_tracker.run(manga_list)
+
+#17, 20,21,22 changes with change in brower and github action
