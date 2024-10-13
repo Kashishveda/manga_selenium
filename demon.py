@@ -125,6 +125,7 @@ class MangaTracker:
     def run(self, manga_list):
         for manga_name in manga_list:
             self.get_latest_chapter(manga_name)
+            self.save_chapter_data()
         self.driver.quit()
 
 # Example usage:
