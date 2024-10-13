@@ -25,21 +25,21 @@ jobs:
 
       - name: Install Brave Browser
         run: |
-          sudo apt-get update
-          sudo apt install -y apt-transport-https curl
-          curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          sudo apt update
+          sudo apt install apt-transport-https curl
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
           sudo apt update
-          sudo apt install -y brave-browser
+          sudo apt install brave-browser
 
-      - name: Install BraveDriver (Chromium-based)
+      - name: Install ChromeDriver (for Brave)
         run: |
-          BRAVE_VERSION=$(brave-browser --version | grep -oP '\d+\.\d+\.\d+')
-          LATEST_DRIVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$BRAVE_VERSION")
+          LATEST_DRIVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
           curl -O "https://chromedriver.storage.googleapis.com/$LATEST_DRIVER/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           chmod +x chromedriver
           sudo mv chromedriver /usr/local/bin/
+
 
       - name: Run script
         run: |
