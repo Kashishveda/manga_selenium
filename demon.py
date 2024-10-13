@@ -75,7 +75,7 @@ class MangaTracker:
         
         try:
             # Wait for page to fully load
-            WebDriverWait(self.driver, 30).until(
+            WebDriverWait(self.driver, 10).until(
                 lambda driver: driver.execute_script("return document.readyState") == "complete"
             )
             
@@ -83,7 +83,7 @@ class MangaTracker:
             
             # Search for manga name in the page
             try:
-                manga_element = WebDriverWait(self.driver, 30).until(
+                manga_element = WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, f"//a[@title=\"{manga_name}\"]"))
                 )
             except Exception as e:
@@ -132,7 +132,7 @@ class MangaTracker:
 
 # Example usage:
 manga_list = [
-    "Moon Slayer",
+    "Onikirimaruden",
     "Necromancer's Evolutionary Traits",
     "Snake Ancestor",
     "The Devil Butler",
