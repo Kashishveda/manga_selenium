@@ -39,3 +39,7 @@ jobs:
           # sudo chmod +x /usr/local/bin/chromedriver  # Make it executable
           # echo "Installed ChromeDriver version:"
           chromedriver --version  # Verify installation
+
+      - name: Run Python Script
+        run: |
+          python3 demon.py
