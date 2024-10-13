@@ -18,45 +18,16 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Install curl and add Brave Repository
+        run: |
+          sudo apt update
+          sudo apt install -y curl
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update  # Update the package list again after adding the repo
+          apt-cache madison brave-browser  # Check for available versions
+
       - name: Check Available Brave Versions
         run: |
           sudo apt update
           apt-cache madison brave-browser
-
-      - name: Install Brave Browser
-        run: |
-          # Define the specific Brave version you want to install
-          BRAVE_VERSION=1.70.126
-          
-          # Ensure curl is installed
-          sudo apt install -y curl
-          
-          # Add Brave's GPG key
-          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-          
-          # Add Brave's repository
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-          
-          # Update package lists
-          sudo apt update
-          
-          # Install the specific version of Brave browser
-          sudo apt install -y brave-browser=${BRAVE_VERSION}-1
-
-
-      - name: Install ChromeDriver
-        run: |
-          CHROMEDRIVER_VERSION="129.0.6668.100"  # Match this with the Brave version
-          curl -O "https://storage.googleapis.com/chrome-for-testing-public/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
-          unzip chromedriver-linux64.zip
-          chmod +x chromedriver
-          sudo mv chromedriver /usr/local/bin/
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run script
-        run: |
-          python demon.py  # Ensure this matches your script name
