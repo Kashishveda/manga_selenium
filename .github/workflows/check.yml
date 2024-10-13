@@ -1,0 +1,13 @@
+name: Manga Notifications
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check_brave_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Available Brave Versions
+        run: |
+          sudo apt update
+          apt-cache madison brave-browser
