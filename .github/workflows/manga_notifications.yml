@@ -45,6 +45,11 @@ jobs:
           # echo "Installed ChromeDriver version:"
           chromedriver --version  # Verify installation
 
+      - name: Set up environment variables
+        run: |
+          echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}" >> $GITHUB_ENV
+          echo "CHAT_ID=${{ secrets.CHAT_ID }}" >> $GITHUB_ENV
+
       - name: Run Python Script
         run: |
           python3 demon.py
