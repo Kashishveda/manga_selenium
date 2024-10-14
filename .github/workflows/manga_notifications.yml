@@ -18,29 +18,53 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Restore chapter data cache
+        id: cache-data
+        uses: actions/cache@v2
+        with:
+          path: chapter_data.pkl
+          key: manga-tracker-cache
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Install Brave Browser
+          
+      - name: Install curl and add Brave Repository
         run: |
           sudo apt update
-          sudo apt install apt-transport-https curl
+          sudo apt install -y curl
           sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-          sudo apt update
-          sudo apt install brave-browser
+          sudo apt update  # Update the package list again after adding the repo
+          sudo apt install -y brave-browser=1.70.126  # Install the specific version of Brave
 
-      - name: Install ChromeDriver (for Brave)
+      - name: Install ChromeDriver
         run: |
-          LATEST_DRIVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-          curl -O "https://chromedriver.storage.googleapis.com/$LATEST_DRIVER/chromedriver_linux64.zip"
-          unzip chromedriver_linux64.zip
-          chmod +x chromedriver
-          sudo mv chromedriver /usr/local/bin/
+          wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.100/linux64/chromedriver-linux64.zip
+          unzip chromedriver-linux64.zip
+          ls -l chromedriver-linux64/  # Optional: List contents to verify extraction
+          mv chromedriver-linux64/chromedriver ./chromedriver
+          chmod +x ./chromedriver  # Ensure it's executable
+          # mv chromedriver-linux64/chromedriver /desired/path/chromedriver
+          # sudo mv chromedriver /usr/local/bin/  # Move to a location in PATH
+          # sudo chmod +x /usr/local/bin/chromedriver  # Make it executable
+          # echo "Installed ChromeDriver version:"
+          chromedriver --version  # Verify installation
 
-
-      - name: Run script
+      - name: Set up environment variables
         run: |
-          python demon.py  # Ensure this matches your script name
+          echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}" >> $GITHUB_ENV
+          echo "CHAT_ID=${{ secrets.CHAT_ID }}" >> $GITHUB_ENV
+
+      - name: Run Python Script
+        run: |
+          python3 demon.py
+
+      - name: Cache updated chapter data
+        uses: actions/cache@v2
+        with:
+          path: chapter_data.pkl
+          key: manga-tracker-cache
+          restore-keys: manga-tracker-cache
+
