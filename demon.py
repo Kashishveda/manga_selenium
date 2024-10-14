@@ -65,7 +65,8 @@ class MangaTracker:
         requests.post(url, json=payload) # Optional: To check the response
             
     def get_latest_chapter(self, manga_name):
-        self.driver.get(self.webpage_url)
+        # not required because we dont want to load this everytime
+        # self.driver.get(self.webpage_url)
         
         # Debug: Check if page loads correctly
         self.log("Page Loaded. URL: " + self.webpage_url)
@@ -80,7 +81,7 @@ class MangaTracker:
             
             # Search for manga name in the page
             try:
-                manga_element = WebDriverWait(self.driver, 10).until(
+                manga_element = WebDriverWait(self.driver, 1).until(
                     EC.presence_of_element_located((By.XPATH, f"//a[@title=\"{manga_name}\"]"))
                 )
             except Exception as e:
@@ -123,21 +124,117 @@ class MangaTracker:
             self.log(f"No new chapter for {manga_name}. Latest stored chapter is still {stored_chapter_number}.")
 
     def run(self, manga_list):
+        # Load the page once before searching for each manga name
+        self.driver.get(self.webpage_url)
+        self.log("Page Loaded. URL: " + self.webpage_url)
         for manga_name in manga_list:
             self.get_latest_chapter(manga_name)
-            self.save_chapter_data()
+            # self.save_chapter_data()
         self.driver.quit()
 
 # Example usage:
 manga_list = [
+    "A Modern Man Who Got Transmigrated Into the Murim World",
+    "Absolute Sword Sense",
+    "Academy’s Genius Swordsman",
+    "Against the Gods",
+    "Apotheosis",
+    "Arcane Sniper",
+    "Becoming the Sacheon Dang's Swordsmaster-Rank Young Lord",
+    "Black Corporation: Joseon",
+    "Bloodhound’s Regression Instinct",
+    "Chronicles of the Demon Faction",
+    "Cultivating the supreme dantian",
+    "Death God",
+    "Doctor’s Rebirth",
+    "Doupo Cangqiong",
+    "Dragon-Devouring Mage",
+    "Genius of the Unique Lineage",
+    "Global Martial Arts",
+    "God of Martial Arts",
+    "Healing Life Through Camping In Another World",
+    "Heavenly Grand Archive’s Young Master",
+    "Heavenly Inquisition Sword (Nine Heavens Swordmaster)",
+    "Holy Emperor's Grandson Is a Necromancer",
+    "How the Pro in His Past Life Sucks the Sweet Honey",
     "I'm Being Raised By Villains",
     "I Work Nine To Five In The Immortal Cultivation World",
+    "Infinite Mage",
+    "Insanely Talented Player",
+    "Keep A Low Profile, Sect Leader!",
+    "King of Manifestations",
+    "Legend of Star General",
+    "Lightning Degree",
+    "Lord of Destiny Wheel",
+    "Magic Academy’s Genius Blinker",    
+    "Magic Emperor",
+    "Margrave’s Bastard Son was The Emperor", 
+    "Martial God Regressed to Level 2",
+    "Martial inverse",
+    "Martial Peak",  
+    "Murim Login",
+    "My Lucky Encounter From The Game Turned Into Reality",
     "My Ruined Academy",
+    "My School Life Pretending To Be a Worthless Person",
+    "Nano Machine",
     "Necromancer's Evolutionary Traits",
+    "Overgeared",
+    "Paranoid Mage",
+    "Path of the Shaman",
+    "Player Who Returned 10,000 Years Later",
+    "Ranker Who Lives A Second Time",
+    "Reborn As A Monster",
+    "Records of the Swordsman Scholar",
+    "Regressor Instruction Manual",
+    "Regressor of the Fallen family",
+    "Release That Witch",
+    "Return of the Frozen Player",
+    "Return of the Mount Hua Sect",
+    "Return of the Legendary Spear Knight",
+    "Revenge of the Sword Clan's Hound",
     "Snake Ancestor",
+    "Solo Farming in the Tower",
+    "Solo Max-Level Newbie",
+    "Song Baek",
+    "Soul Land V",
+    "Starting From Today I'll Work As A City Lord",
+    "Swallowed Star",
+    "Sword Fanatic Wanders Through The Night",
+    "Swordmaster’s Youngest Son", 
+    "Surviving the Game as a Barbarian", 
+    "Surviving as a Mage in a Magic Academy",
+    "Tale of a Scribe Who Retires to the Countryside", 
+    "Talent Copycat",
+    "Tales of Demons and Gods",
+    "Talent-Swallowing Magician",
+    "Terminally-Ill Genius Dark Knight",
+    "The Archmage's Restaurant",
+    "The Count’s Youngest Son is A Player",
+    "The Crown Prince That Sells Medicine",
+    "The Dark Magician Transmigrates After 66666 Years",
     "The Devil Butler",
+    "The Extra’s Academy Survival Guide",
+    "The Greatest Estate Designer",
+    "The Hero Returns",
+    "The Heavenly Demon Can't Live a Normal Life",
+    "The Indomitable Martial King",
+    "The Knight King Who Returned With a God",
+    "The Max Level Hero has Returned!",
+    "The Nebula's Civilization",
+    "The Primal Hunter",
+    "The Lone Necromancer",
+    "The Lord's Coins Aren't Decreasing?!",
+    "The Reborn Young Lord Is An Assassin",
+    "The Return of The Disaster-Class Hero",
+    "The Twin Swords Of The Sima Clan",
     "The Tutorial Is Too Hard",
-    "The Reborn Young Lord Is An Assassin"
+    "The Ultimate of All Ages",
+    "To Hell With Being A Saint, I’m A Doctor",
+    "Transcension Academy",
+    "Warrior Grandpa and Grandmaster daughter",
+    "Warrior Grandpa and Supreme Granddaughter",
+    "World’s Greatest Senior Disciple",
+    "Yuan Zun"
     # Add more manga names here
 ]
 
