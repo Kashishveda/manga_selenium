@@ -68,3 +68,11 @@ jobs:
           key: manga-tracker-cache
           restore-keys: manga-tracker-cache
 
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "ekveda24@gmail.com"  # Your email
+          git config --local user.name "Kashishveda"  # Your name
+          git add manga_chapters.json
+          git commit -m "Update manga chapters" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.MY_GITHUB_TOKEN }}@github.com/Kashishveda/manga.git HEAD:master
+
