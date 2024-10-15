@@ -9,8 +9,9 @@ import os
 import requests
 
 class MangaTracker:
-    def __init__(self, debug=False):
-        self.webpage_url = "https://manganato.com/"  # Replace with actual homepage URL
+    def __init__(self, mangasite_URL, sitename, debug=False):
+        self.webpage_url = mangasite_URL  # Replace with actual homepage URL
+        self.sitename = sitename # name of the site
         self.brave_path = "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe"
         self.driver_path = "C:/Users/ekved/Downloads/chromedriver-win64/chromedriver.exe"
         options = webdriver.ChromeOptions()
@@ -89,10 +90,22 @@ class MangaTracker:
                 return  # Skip to the next manga
             
             self.log(f"Manga found: {manga_name}")
-            
+
             # Get the latest chapter info
-            latest_chapter_element = manga_element.find_element(By.XPATH, ".//following::p[@class='a-h item-chapter'][1]/a")
-            latest_chapter_text = latest_chapter_element.get_attribute('title')
+            if self.sitename == "manganato":
+                # Logic for manganato.com
+                latest_chapter_element = manga_element.find_element(By.XPATH, ".//following::p[@class='a-h item-chapter'][1]/a")
+                latest_chapter_text = latest_chapter_element.get_attribute('title')
+            elif self.sitename == "demonmanga":
+                # Logic for ciorti.online (demonmanga)
+                latest_chapter_element = manga_element.find_element(By.XPATH, ".//following::div[@class='flex flex-row chap-date justify-space-between']/div[1]/a")
+                latest_chapter_text = latest_chapter_element.text
+                #latest_chapter_element = manga_element.find_element(By.XPATH, ".//following-sibling::div[contains(@class, 'chap-date')]/div[1]/a")
+                #latest_chapter_text = latest_chapter_element.text
+            else:
+                self.log(f"Sitename '{self.sitename}' is not recognized.")
+                return  # Skip to the next manga
+
             self.log(f"Latest Chapter for {manga_name}: {latest_chapter_text}")
             
             # Extract chapter number (assuming format like "Chapter 6: ...")
@@ -113,7 +126,7 @@ class MangaTracker:
         latest_chapter_number = int(latest_chapter_number)
     
         if latest_chapter_number > stored_chapter_number:
-            message = f"New chapter detected for {manga_name}! Previous: {stored_chapter_number}, Now: {latest_chapter_number}"
+            message = f"New chapter from {self.sitename} detected for {manga_name}! Previous: {stored_chapter_number}, Now: {latest_chapter_number}"
             self.log(message)
             self.send_telegram_message(message)  # Send notification to Telegram
     
@@ -239,7 +252,13 @@ manga_list = [
 ]
 
 # Set debug=True for local testing
-manga_tracker = MangaTracker(debug=False)  # Set to False when running in GitHub Actions
+manga_URL = "https://manganato.com/"
+sitename = "manganato"
+manga_tracker = MangaTracker(manga_URL, sitename, debug=False)  # Set to False when running in GitHub Actions
 manga_tracker.run(manga_list)
+manga_URL = "https://ciorti.online/lastupdates.php"
+sitename = "demonmanga"
+manga_tracker2 = MangaTracker(manga_URL, sitename, debug=False) # Set to False
+manga_tracker2.run(manga_list)
 
 #17, 20,21,22 changes with change in brower and github action
